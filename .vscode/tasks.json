@@ -60,6 +60,7 @@
             "detail": "Build plugin with CLI",
             "linux": {
                 "command": "${workspaceFolder}/.vscode/build.sh",
+                "args":["${config:pass}"]
             },
             // // placeholder for windows logic, not currently planned
             // "windows": {
@@ -118,7 +119,7 @@
             "label": "builddeploy",
             "detail": "Builds plugin and deploys to deck",
             "dependsOrder": "sequence",
-            "group": "none",
+            "group": "build",
             "dependsOn": [
                 "build",
                 "deploy"

@@ -1,105 +1,61 @@
 import {
   ButtonItem,
   definePlugin,
-  DialogButton,
-  Menu,
-  MenuItem,
-  Navigation,
   PanelSection,
-  PanelSectionRow,
   ServerAPI,
-  showContextMenu,
   staticClasses,
 } from "decky-frontend-lib";
-import { VFC } from "react";
+import { VFC, useState  } from "react";
 import { FaShip } from "react-icons/fa";
 
-import logo from "../assets/logo.png";
 
-// interface AddMethodArgs {
-//   left: number;
-//   right: number;
-// }
+import * as backend from "./backend";
 
-const Content: VFC<{ serverAPI: ServerAPI }> = ({serverAPI}) => {
-  // const [result, setResult] = useState<number | undefined>();
 
-  // const onClick = async () => {
-  //   const result = await serverAPI.callPluginMethod<AddMethodArgs, number>(
-  //     "add",
-  //     {
-  //       left: 2,
-  //       right: 2,
-  //     }
-  //   );
-  //   if (result.success) {
-  //     setResult(result.result);
-  //   }
-  // };
+
+const Content: VFC = () => {
+  let [result, setResult] = useState<number>(0);
 
   return (
     <PanelSection title="Panel Section">
-      <PanelSectionRow>
-        <ButtonItem
-          layout="below"
-          onClick={(e) =>
-            showContextMenu(
-              <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
-                <MenuItem onSelected={() => {}}>Item #1</MenuItem>
-                <MenuItem onSelected={() => {}}>Item #2</MenuItem>
-                <MenuItem onSelected={() => {}}>Item #3</MenuItem>
-              </Menu>,
-              e.currentTarget ?? window
-            )
-          }
-        >
-          Server says yolo
-        </ButtonItem>
-      </PanelSectionRow>
 
-      <PanelSectionRow>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <img src={logo} />
-        </div>
-      </PanelSectionRow>
-
-      <PanelSectionRow>
-        <ButtonItem
+      <ButtonItem
           layout="below"
-          onClick={() => {
-            Navigation.CloseSideMenus();
-            Navigation.Navigate("/decky-plugin-test");
+          onClick={async () => {
+            await backend.add().then((result1) => {setResult(result1); console.log("pidor!!!!!@34-")});
+            // setResult(result+1);
+            // console.log("pidor!!!!!@34-");
           }}
         >
-          Router
-        </ButtonItem>
-      </PanelSectionRow>
+          Router + {result}
+        </ButtonItem>  
+
+        <ButtonItem
+          layout="below"
+          onClick={async () => {
+            await backend.addTMP().then((result1) => {setResult(result1); console.log("pidor!!!!!@34-")});
+            // setResult(result+1);
+            // console.log("pidor!!!!!@34-");
+          }}
+        >
+          Router2 + {result}
+        </ButtonItem>  
+
     </PanelSection>
   );
 };
 
-const DeckyPluginRouterTest: VFC = () => {
-  return (
-    <div style={{ marginTop: "50px", color: "white" }}>
-      Hello World!
-      <DialogButton onClick={() => Navigation.NavigateToLibraryTab()}>
-        Go to Library
-      </DialogButton>
-    </div>
-  );
-};
+
 
 export default definePlugin((serverApi: ServerAPI) => {
-  serverApi.routerHook.addRoute("/decky-plugin-test", DeckyPluginRouterTest, {
-    exact: true,
-  });
+  backend.setServerAPI(serverApi);
 
   return {
     title: <div className={staticClasses.Title}>Example Plugin</div>,
-    content: <Content serverAPI={serverApi} />,
+    content: <Content/>,
     icon: <FaShip />,
     onDismount() {
-      serverApi.routerHook.removeRoute("/decky-plugin-test");
+      
     },
   };
 });
